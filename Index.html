@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17111f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi música">
+<link rel="apple-touch-icon" id="ico">
+<title>Mi música</title>
+<style>
+:root{--bg:#17111f;--sf:#231a31;--tx:#f5efe6;--mu:#a699bb;--gd:#ffc43d;color-scheme:dark}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+body{font:16px/1.4 ui-rounded,"SF Pro Rounded",system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100dvh;padding:calc(env(safe-area-inset-top) + 20px) 18px calc(190px + env(safe-area-inset-bottom))}
+main{max-width:640px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:22px}
+h1{font-size:36px;font-weight:800;letter-spacing:-1.2px;line-height:1}
+.mu{color:var(--mu);font-size:14px;margin-top:8px}
+.add{background:var(--gd);color:#241800;font-weight:700;padding:12px 18px;border-radius:99px;cursor:pointer;white-space:nowrap}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;display:grid;place-items:center}
+svg{width:22px;height:22px;fill:currentColor}
+:focus-visible{outline:2px solid var(--gd);outline-offset:2px}
+#tip{background:var(--sf);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--mu);margin-bottom:14px}
+#tip b,#empty b{color:var(--tx)}
+#empty{text-align:center;padding:64px 20px;color:var(--mu)}
+#empty .disc{width:96px;height:96px;margin:0 auto 18px;border-radius:50%;background:radial-gradient(circle,var(--gd) 0 18%,#0d0914 19% 22%,transparent 23%),repeating-radial-gradient(circle,#0d0914 0 2px,#1f1729 3px 4px)}
+ul{list-style:none}
+li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff14}
+.rc{width:50px;height:50px;border-radius:50%;flex:none;color:#fff;background:radial-gradient(circle,var(--c) 0 36%,#0d0914 37%)}
+.inf{flex:1;min-width:0;cursor:pointer}
+.inf b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inf small{color:var(--mu);font-size:13px}
+li.on .inf b{color:var(--gd)}
+.ic{width:40px;height:40px;border-radius:50%;color:var(--mu)}
+.ic:active{background:#ffffff14}
+#bar{position:fixed;left:0;right:0;bottom:0;background:#1d1528ee;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-top:1px solid #ffffff1a;padding:12px 18px calc(12px + env(safe-area-inset-bottom))}
+.pl{max-width:640px;margin:auto;display:grid;grid-template-columns:72px 1fr;gap:2px 16px;align-items:center}
+#vn{grid-row:span 3;width:72px;height:72px;border-radius:50%;position:relative;background:conic-gradient(#fff0 0 38%,#ffffff30 50%,#fff0 62%,#fff0 88%,#ffffff18 94%,#fff0),repeating-radial-gradient(circle,#0d0914 0 2px,#1f1729 3px 4px)}
+#vn::after{content:"";position:absolute;inset:24px;border-radius:50%;background:var(--c,var(--gd));box-shadow:0 0 0 3px #0d0914}
+#vn.sp{animation:sp 2.4s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#vn.sp{animation:none}}
+.r1{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.r1 b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r1 small{color:var(--mu);flex:none;font-variant-numeric:tabular-nums}
+#sk{width:100%;accent-color:var(--gd)}
+.ct{display:flex;justify-content:space-between;align-items:center}
+#sf,#rp{font-size:20px}
+#sf.on,#rp.on{color:var(--gd)}
+.big{width:52px;height:52px;border-radius:50%;background:var(--gd);color:#241800}
+#ts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(172px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:12px;align-items:center;max-width:92vw;background:var(--tx);color:#241800;padding:10px 16px;border-radius:99px;font-size:14px;font-weight:600}
+#ts button{background:#241800;color:var(--tx);padding:6px 14px;border-radius:99px;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div><h1>Mi música</h1><p class="mu">Escucha, descarga en MP3 y comparte</p></div>
+    <label class="add" for="f">Añadir canciones</label>
+    <input id="f" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac" multiple hidden>
+  </header>
+  <div id="tip" hidden>En iPhone y iPad: toca <b>Compartir</b> y luego <b>Añadir a pantalla de inicio</b> para instalarla como una app.</div>
+  <div id="empty"><div class="disc"></div><p>Toca <b>Añadir canciones</b> para cargar tu música.<br>Se guarda en tu dispositivo y suena sin conexión.</p></div>
+  <ul id="list"></ul>
+</main>
+
+<div id="bar" hidden>
+  <div class="pl">
+    <div id="vn"></div>
+    <div class="r1"><b id="tt"></b><small id="tm">0:00 / 0:00</small></div>
+    <input id="sk" type="range" min="0" max="1000" value="0" aria-label="Progreso">
+    <div class="ct">
+      <button class="ic" id="sf" aria-label="Aleatorio">⇄</button>
+      <button class="ic" id="pv" aria-label="Anterior"></button>
+      <button class="big" id="pp" aria-label="Reproducir o pausar"></button>
+      <button class="ic" id="nx" aria-label="Siguiente"></button>
+      <button class="ic" id="rp" aria-label="Repetir">↻</button>
+    </div>
+  </div>
+</div>
+<audio id="au" preload="metadata" playsinline></audio>
+<div id="ts" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),au=$('#au'),
+V='viewBox="0 0 24 24"',
+I={play:`<svg ${V}><path d="M8 5v14l11-7z"/></svg>`,
+pause:`<svg ${V}><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`,
+prev:`<svg ${V}><path d="M6 6h2v12H6zM9.5 12 18 18V6z"/></svg>`,
+next:`<svg ${V}><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>`,
+dl:`<svg ${V}><path d="M11 3h2v9.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM5 19h14v2H5z"/></svg>`,
+sh:`<svg ${V}><path d="m12 2 4.5 4.5-1.4 1.4L13 5.8V15h-2V5.8L8.9 7.9 7.5 6.5zM5 10h3v2H7v8h10v-8h-1v-2h3v12H5z"/></svg>`,
+rm:`<svg ${V}><path d="M9 3h6l1 2h4v2H4V5h4zM6 9h12l-1 12H7z"/></svg>`};
+let tr=[],cur=-1,sh=0,rp=0,db=null,tt;
+const ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),
+std=navigator.standalone||matchMedia('(display-mode:standalone)').matches,
+U={},url=t=>U[t.id]||(U[t.id]=URL.createObjectURL(t.blob)),
+esc=s=>s.replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),
+col=t=>{let h=0;for(const c of t.name)h=(h*31+c.charCodeAt(0))%360;return`hsl(${h} 75% 55%)`},
+fmt=s=>isFinite(s)?(s/60|0)+':'+String(s%60|0).padStart(2,'0'):'0:00',
+tx=(m,f)=>new Promise((ok,no)=>{if(!db)return ok();const t=db.transaction('t',m),r=f(t.objectStore('t'));t.oncomplete=()=>ok(r.result);t.onerror=t.onabort=()=>no(t.error)});
+
+function toast(m,b,f,keep){const e=$('#ts');clearTimeout(tt);e.innerHTML=`<span>${m}</span>${b?`<button>${b}</button>`:''}`;e.hidden=false;
+  if(b)e.querySelector('button').onclick=()=>{e.hidden=true;f()};
+  if(!keep)tt=setTimeout(()=>e.hidden=true,b?20000:3500)}
+
+function draw(){
+  $('#empty').hidden=tr.length>0;
+  $('#list').innerHTML=tr.map((t,i)=>`<li data-i="${i}" class="${i==cur?'on':''}">
+<button class="rc" style="--c:${col(t)}" data-a="p" aria-label="Reproducir ${esc(t.name)}">${i==cur&&!au.paused?I.pause:I.play}</button>
+<div class="inf" data-a="p"><b>${esc(t.name)}</b><small>${t.ext.toUpperCase()} · ${(t.size/1048576).toFixed(1)} MB</small></div>
+<button class="ic" data-a="d" aria-label="Descargar MP3">${I.dl}</button>
+<button class="ic" data-a="s" aria-label="Compartir">${I.sh}</button>
+<button class="ic" data-a="r" aria-label="Eliminar">${I.rm}</button></li>`).join('');
+  const t=tr[cur];$('#bar').hidden=!t;
+  if(t){$('#tt').textContent=t.name;$('#vn').style.setProperty('--c',col(t));$('#vn').classList.toggle('sp',!au.paused);$('#pp').innerHTML=au.paused?I.play:I.pause}
+}
+
+/* Reproducción */
+const tog=()=>au.paused?au.play():au.pause();
+function play(i){const t=tr[i];if(!t)return;if(i!=cur){cur=i;au.src=url(t)}au.play().catch(()=>{});ms(t);draw()}
+function step(d){if(!tr.length)return;let n=cur+d;if(sh&&tr.length>1)do n=Math.random()*tr.length|0;while(n==cur);play((n+tr.length)%tr.length)}
+function del(i){const t=tr[i];tr.splice(i,1);URL.revokeObjectURL(U[t.id]);delete U[t.id];tx('readwrite',s=>s.delete(t.id)).catch(()=>{});
+  if(i==cur){au.pause();au.removeAttribute('src');au.load();cur=-1}else if(i<cur)cur--;draw()}
+
+au.onplay=au.onpause=()=>draw();
+au.ontimeupdate=()=>{const d=au.duration;$('#sk').value=d?au.currentTime/d*1000:0;$('#tm').textContent=fmt(au.currentTime)+' / '+fmt(d)};
+au.onended=()=>{if(rp==2){au.currentTime=0;au.play()}else if(rp==1||sh||cur<tr.length-1)step(1);else au.pause()};
+au.onerror=()=>{if(au.getAttribute('src'))toast('No se pudo reproducir este archivo')};
+$('#sk').oninput=e=>{if(au.duration)au.currentTime=e.target.value/1000*au.duration};
+$('#pp').onclick=tog;$('#pv').onclick=()=>step(-1);$('#nx').onclick=()=>step(1);
+$('#pv').innerHTML=I.prev;$('#nx').innerHTML=I.next;
+$('#sf').onclick=e=>{sh^=1;e.currentTarget.classList.toggle('on',!!sh)};
+$('#rp').onclick=e=>{rp=(rp+1)%3;e.currentTarget.classList.toggle('on',!!rp);e.currentTarget.textContent=rp==2?'↻1':'↻'};
+
+/* Controles de pantalla de bloqueo (iOS / Android) */
+function ms(t){if('mediaSession' in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:t.name,artist:'Mi música',artwork:[{src:$('#ico').href,sizes:'180x180',type:'image/png'}]})}
+if('mediaSession' in navigator)for(const[a,f]of[['play',()=>au.play()],['pause',()=>au.pause()],['previoustrack',()=>step(-1)],['nexttrack',()=>step(1)],['seekto',e=>{au.currentTime=e.seekTime}]])try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}
+
+/* Biblioteca (se guarda en el dispositivo con IndexedDB) */
+function add(fs){let n=0;
+  for(const f of fs){
+    if(!/^audio\//.test(f.type)&&!/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|weba|caf)$/i.test(f.name))continue;
+    const t={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),at:Date.now()+n++,name:f.name.replace(/\.[^.]+$/,''),ext:(f.name.match(/\.([^.]+)$/)||[,'mp3'])[1].toLowerCase(),type:f.type||'audio/mpeg',size:f.size,blob:f};
+    tr.push(t);tx('readwrite',s=>s.put(t)).catch(()=>toast('No se pudo guardar para uso sin conexión'));
+  }
+  draw();if(!n)toast('Elige archivos de audio (MP3, M4A, WAV…)')}
+$('#f').onchange=e=>{add([...e.target.files]);e.target.value=''};
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();add([...e.dataTransfer.files])});
+$('#list').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const i=+b.closest('li').dataset.i,a=b.dataset.a,t=tr[i];
+  if(a=='p')i==cur?tog():play(i);
+  if(a=='d')mp3(t);
+  if(a=='s')share(t);
+  if(a=='r'&&confirm(`¿Eliminar «${t.name}»?`))del(i)};
+
+/* Convertir a MP3 (en el propio dispositivo) */
+async function toMp3(t){
+  if(t.ext=='mp3'||t.type=='audio/mpeg')return t.blob;
+  if(!window.lamejs)throw Error('Sin codificador MP3');
+  const ab=await t.blob.arrayBuffer(),ctx=new(window.AudioContext||window.webkitAudioContext)(),
+  buf=await new Promise((ok,no)=>{const p=ctx.decodeAudioData(ab,ok,no);p&&p.catch&&p.catch(()=>{})});
+  ctx.close&&ctx.close();
+  const ch=Math.min(buf.numberOfChannels,2),
+  conv=c=>{const f=buf.getChannelData(c),r=new Int16Array(f.length);for(let i=0;i<f.length;i++){const s=Math.max(-1,Math.min(1,f[i]));r[i]=s<0?s*32768:s*32767}return r},
+  L=conv(0),R=ch>1?conv(1):null,enc=new lamejs.Mp3Encoder(ch,buf.sampleRate,128),out=[],B=1152*16;
+  for(let i=0,k=0;i<L.length;i+=B,k++){
+    const d=enc.encodeBuffer(L.subarray(i,i+B),R?R.subarray(i,i+B):undefined);if(d.length)out.push(d);
+    if(k%8==0){toast(`Convirtiendo a MP3… ${Math.round(i/L.length*100)}%`,0,0,1);await new Promise(r=>setTimeout(r))}
+  }
+  const e=enc.flush();if(e.length)out.push(e);
+  return new Blob(out,{type:'audio/mpeg'})}
+
+async function mp3(t){
+  try{
+    const b=await toMp3(t),n=t.name+'.mp3';
+    if(ios&&b!==t.blob)toast('MP3 listo','Guardar',()=>save(b,n));
+    else{save(b,n);toast('Descargando '+n)}
+  }catch(e){toast('No se pudo convertir este formato. Prueba con otro archivo.')}}
+
+/* En iOS se usa la hoja de compartir («Guardar en Archivos»); en el resto, descarga directa */
+async function save(b,n){
+  const f=new File([b],n,{type:b.type||'audio/mpeg'});
+  if(ios&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e.name=='AbortError')return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=n;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),6e4)}
+
+async function share(t){
+  const f=new File([t.blob],t.name+'.'+t.ext,{type:t.type});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:t.name});
+    else if(navigator.share)await navigator.share({title:t.name,text:`Escucha «${t.name}»`});
+    else{save(t.blob,f.name);toast('Este navegador no puede compartir; se descargó el archivo')}
+  }catch(e){if(e.name!='AbortError')toast('No se pudo compartir')}}
+
+/* Icono para iOS + aviso de instalación + carga inicial */
+{const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');
+ x.fillStyle='#17111f';x.fillRect(0,0,180,180);x.fillStyle='#ffc43d';x.beginPath();x.arc(90,90,62,0,7);x.fill();
+ x.fillStyle='#17111f';x.beginPath();x.arc(90,90,20,0,7);x.fill();$('#ico').href=c.toDataURL('image/png')}
+if(ios&&!std)$('#tip').hidden=false;
+(async()=>{
+  try{
+    db=await new Promise((ok,no)=>{const r=indexedDB.open('mimusica',1);r.onupgradeneeded=()=>r.result.createObjectStore('t',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+    tr=((await tx('readonly',s=>s.getAll()))||[]).sort((a,b)=>a.at-b.at);
+  }catch(e){db=null}
+  draw();
+})();
+</script>
+</body>
+</html>
